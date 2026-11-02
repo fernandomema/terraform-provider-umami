@@ -40,24 +40,24 @@ func (r *websiteResource) Metadata(_ context.Context, req resource.MetadataReque
 
 func (r *websiteResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Un sitio (website) de Umami. Su id es el data-website-id del tracker.",
+		Description: "An Umami website. Its id is the data-website-id used by the tracker.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:      true,
-				Description:   "ID del sitio = data-website-id.",
+				Description:   "Website ID, i.e. the data-website-id.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
-			"name":     schema.StringAttribute{Required: true, Description: "Nombre visible."},
-			"domain":   schema.StringAttribute{Required: true, Description: "Dominio del sitio (sin protocolo)."},
-			"share_id": schema.StringAttribute{Optional: true, Description: "ID para compartir el dashboard publicamente (/share/<id>)."},
+			"name":     schema.StringAttribute{Required: true, Description: "Display name."},
+			"domain":   schema.StringAttribute{Required: true, Description: "Domain of the website, without protocol."},
+			"share_id": schema.StringAttribute{Optional: true, Description: "ID used for the public share link (/share/<id>)."},
 			"script_url": schema.StringAttribute{
 				Computed:      true,
-				Description:   "URL del script.js de la instancia.",
+				Description:   "URL of the instance's script.js.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"tracking_script": schema.StringAttribute{
 				Computed:      true,
-				Description:   "Etiqueta <script> lista para pegar en el sitio.",
+				Description:   "Ready-to-paste <script> tag.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
@@ -107,7 +107,7 @@ func (r *websiteResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 	w, err := r.data.Client.CreateWebsite(ctx, r.input(plan))
 	if err != nil {
-		resp.Diagnostics.AddError("Error creando el website", err.Error())
+		resp.Diagnostics.AddError("Error creating website", err.Error())
 		return
 	}
 	r.fill(&plan, w)
@@ -127,7 +127,7 @@ func (r *websiteResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 	if err != nil {
-		resp.Diagnostics.AddError("Error leyendo el website", err.Error())
+		resp.Diagnostics.AddError("Error reading website", err.Error())
 		return
 	}
 	r.fill(&state, w)
@@ -143,7 +143,7 @@ func (r *websiteResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 	w, err := r.data.Client.UpdateWebsite(ctx, state.ID.ValueString(), r.input(plan))
 	if err != nil {
-		resp.Diagnostics.AddError("Error actualizando el website", err.Error())
+		resp.Diagnostics.AddError("Error updating website", err.Error())
 		return
 	}
 	r.fill(&plan, w)
@@ -157,7 +157,7 @@ func (r *websiteResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 	if err := r.data.Client.DeleteWebsite(ctx, state.ID.ValueString()); err != nil {
-		resp.Diagnostics.AddError("Error borrando el website", err.Error())
+		resp.Diagnostics.AddError("Error deleting website", err.Error())
 	}
 }
 

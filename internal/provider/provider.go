@@ -40,13 +40,13 @@ func (p *umamiProvider) Metadata(_ context.Context, _ provider.MetadataRequest, 
 
 func (p *umamiProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gestiona una instancia de Umami (self-hosted o cloud).",
+		Description: "Manage an Umami instance (self-hosted or Cloud).",
 		Attributes: map[string]schema.Attribute{
-			"endpoint": schema.StringAttribute{Optional: true, Description: "URL base, p. ej. https://umami.example.com. Env: UMAMI_ENDPOINT."},
-			"username": schema.StringAttribute{Optional: true, Description: "Usuario (self-hosted). Env: UMAMI_USERNAME."},
-			"password": schema.StringAttribute{Optional: true, Sensitive: true, Description: "Contrasena (self-hosted). Env: UMAMI_PASSWORD."},
-			"api_key":  schema.StringAttribute{Optional: true, Sensitive: true, Description: "API key de Umami Cloud (alternativa a usuario/contrasena). Env: UMAMI_API_KEY."},
-			"insecure": schema.BoolAttribute{Optional: true, Description: "No verificar el certificado TLS."},
+			"endpoint": schema.StringAttribute{Optional: true, Description: "Base URL of the instance, e.g. https://umami.example.com. Environment variable: UMAMI_ENDPOINT."},
+			"username": schema.StringAttribute{Optional: true, Description: "Username (self-hosted). Environment variable: UMAMI_USERNAME."},
+			"password": schema.StringAttribute{Optional: true, Sensitive: true, Description: "Password (self-hosted). Environment variable: UMAMI_PASSWORD."},
+			"api_key":  schema.StringAttribute{Optional: true, Sensitive: true, Description: "Umami Cloud API key, an alternative to username/password. Environment variable: UMAMI_API_KEY."},
+			"insecure": schema.BoolAttribute{Optional: true, Description: "Skip TLS certificate verification."},
 		},
 	}
 }
@@ -67,17 +67,17 @@ func (p *umamiProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	endpoint := orEnv(cfg.Endpoint, "UMAMI_ENDPOINT")
 	user, pass, key := orEnv(cfg.Username, "UMAMI_USERNAME"), orEnv(cfg.Password, "UMAMI_PASSWORD"), orEnv(cfg.APIKey, "UMAMI_API_KEY")
 	if endpoint == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("endpoint"), "Falta endpoint", "Define endpoint o UMAMI_ENDPOINT.")
+		resp.Diagnostics.AddAttributeError(path.Root("endpoint"), "Missing endpoint", "Set endpoint or the UMAMI_ENDPOINT environment variable.")
 	}
 	if key == "" && (user == "" || pass == "") {
-		resp.Diagnostics.AddError("Faltan credenciales", "Define api_key, o username y password (o sus variables UMAMI_*).")
+		resp.Diagnostics.AddError("Missing credentials", "Set api_key, or both username and password (or the UMAMI_* environment variables).")
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 	c, err := client.New(ctx, client.Config{Endpoint: endpoint, Username: user, Password: pass, APIKey: key, Insecure: cfg.Insecure.ValueBool()})
 	if err != nil {
-		resp.Diagnostics.AddError("No se pudo conectar con Umami", err.Error())
+		resp.Diagnostics.AddError("Unable to connect to Umami", err.Error())
 		return
 	}
 	d := &providerData{Client: c, Endpoint: endpoint}

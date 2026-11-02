@@ -1,4 +1,4 @@
-// Package client es un cliente minimo de la API REST de Umami (self-hosted y cloud).
+// Package client is a minimal client for the Umami REST API (self-hosted and Cloud).
 package client
 
 import (
@@ -30,13 +30,13 @@ type Config struct {
 
 type NotFoundError struct{ Path string }
 
-func (e *NotFoundError) Error() string { return "no encontrado: " + e.Path }
+func (e *NotFoundError) Error() string { return "not found: " + e.Path }
 
-// New crea el cliente; con usuario/contrasena hace login y guarda el JWT.
+// New creates the client; with username/password it logs in and keeps the JWT.
 func New(ctx context.Context, cfg Config) (*Client, error) {
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 	if cfg.Insecure {
-		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true} //nolint:gosec // opt-in explicito
+		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true} //nolint:gosec // explicit opt-in
 	}
 	c := &Client{
 		endpoint: strings.TrimRight(cfg.Endpoint, "/"),
@@ -51,10 +51,10 @@ func New(ctx context.Context, cfg Config) (*Client, error) {
 	}
 	body := map[string]string{"username": cfg.Username, "password": cfg.Password}
 	if err := c.do(ctx, http.MethodPost, "/api/auth/login", body, &out); err != nil {
-		return nil, fmt.Errorf("login en Umami: %w", err)
+		return nil, fmt.Errorf("Umami login: %w", err)
 	}
 	if out.Token == "" {
-		return nil, fmt.Errorf("login en Umami: respuesta sin token")
+		return nil, fmt.Errorf("Umami login: response has no token")
 	}
 	c.token = out.Token
 	return c, nil

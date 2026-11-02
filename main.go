@@ -13,7 +13,7 @@ var version = "dev"
 
 func main() {
 	var debug bool
-	flag.BoolVar(&debug, "debug", false, "arranca el provider para depurar")
+	flag.BoolVar(&debug, "debug", false, "run the provider in debug mode")
 	flag.Parse()
 
 	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{

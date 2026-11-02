@@ -63,16 +63,16 @@ func TestWebsiteLifecycle(t *testing.T) {
 		t.Fatal(err)
 	}
 	if g, _ := c.GetWebsite(ctx, "abc"); g.Name != "n2" {
-		t.Fatalf("update no aplicado: %+v", g)
+		t.Fatalf("update not applied: %+v", g)
 	}
 	if err = c.DeleteWebsite(ctx, "abc"); err != nil {
 		t.Fatal(err)
 	}
 	var nf *NotFoundError
 	if _, err = c.GetWebsite(ctx, "abc"); !errors.As(err, &nf) {
-		t.Fatalf("esperaba NotFoundError, got %v", err)
+		t.Fatalf("expected NotFoundError, got %v", err)
 	}
 	if err = c.DeleteWebsite(ctx, "abc"); err != nil {
-		t.Fatalf("delete debe ser idempotente: %v", err)
+		t.Fatalf("delete must be idempotent: %v", err)
 	}
 }

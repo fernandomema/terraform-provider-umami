@@ -31,7 +31,7 @@ func (c *Client) GetWebsite(ctx context.Context, id string) (*Website, error) {
 	if err := c.do(ctx, http.MethodGet, "/api/websites/"+id, nil, &w); err != nil {
 		return nil, err
 	}
-	// Umami devuelve 200 con cuerpo vacio/id vacio para sitios borrados (deletedAt)
+	// Umami may answer 200 with an empty body/id for deleted websites
 	if w.ID == "" {
 		return nil, &NotFoundError{Path: "/api/websites/" + id}
 	}

@@ -7,7 +7,7 @@ deploys them.
 
 - **Registry:** `fernandomema/umami`
 - **Resources:** [`umami_website`](docs/resources/website.md)
-- **Compatibility:** OpenTofu >= 1.6 and Terraform >= 1.0 (plugin protocol 6)
+- **Compatibility:** built on plugin protocol 6; tested with OpenTofu 1.13
 
 ## Quick start
 
